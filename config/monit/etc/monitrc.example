@@ -1,0 +1,31 @@
+set daemon 120                    # check services at 2-minute intervals
+set logfile /var/log/monit.log
+set eventqueue
+    basedir /var/lib/monit/events # set the base directory where events will be stored
+    slots 100                     # optionally limit the queue size
+
+include /etc/monit/conf.d/sys/*.conf
+include /etc/monit/conf.d/services/*.conf
+include /etc/monit/conf.d/apps/*.conf
+
+set httpd port 2812 and
+    use address localhost
+    allow localhost
+
+set mmonit http://<user>:<password>@10.0.79.2/collector
+set httpd port 2812 and use address localhost
+    allow 10.0.79.2
+
+set mailserver localhost
+set alert admin@gmail.com  but not on { pid ppid }
+
+set mail-format {
+   from: monit@hostname
+   subject: MONIT ALERT - <hostname> $HOST $SERVICE - $EVENT
+   message:
+ACTION: $ACTION
+SERVICE: $SERVICE
+SERVER: <hostname>
+DESCRIPTOR: $DESCRIPTION
+DATE: $DATE
+}
